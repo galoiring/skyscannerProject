@@ -1,4 +1,6 @@
-//To run use: "node app.js" on your terminal
+// To run use: "node app.js" on your terminal
+// Visit http://localhost:3000
+
 const http = require('http');
 
 const hostname = '127.0.0.1';
