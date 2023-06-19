@@ -59,4 +59,23 @@ const firstTry = async() => {
 //   console.log('after first try');
 // })
 const read = require('./read.json');
-console.log(read.content.results.itineraries);
+// console.log(read.content.results.itineraries);
+const key_1 = Object.keys(read.content.results.legs)[0]
+const key_2 = Object.keys(read.content.results.legs)[1]
+
+const flight_option_one = {
+  originId: read.content.results.legs[key_1].originPlaceId,
+  destinationId: read.content.results.legs[key_1].destinationPlaceId,
+  date: read.content.results.legs[key_1].departureDateTime,
+  price: read.content.results.itineraries[key_1].pricingOptions[0].price.amount,
+}
+
+const flight_option_two = {
+  originId: read.content.results.legs[key_2].originPlaceId,
+  destinationId: read.content.results.legs[key_2].destinationPlaceId,
+  date: read.content.results.legs[key_2].departureDateTime,
+  price: read.content.results.itineraries[key_2].pricingOptions[0].price.amount,
+}
+
+console.log("*******************************")
+console.log(flight_option_two)
