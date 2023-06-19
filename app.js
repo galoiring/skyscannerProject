@@ -3,12 +3,12 @@
 
 const http = require('http');
 const hostname = '127.0.0.1';
-const port = 3000;
+const port = 3001;
 
 //add axios and build request for skyscanner
 const axios = require('axios');
 const url = 'http://' + hostname + ':' + port;
-const destinationPlaceMarket = 'UK';
+const destinationPlaceMarket = 'US';
 const skyScannerUrl = 'https://skyscanner-api.p.rapidapi.com/v3/flights/live/search/create';
 const skyscannerBody = { query: { market: destinationPlaceMarket, locale: "en-GB", currency: "EUR", 
   queryLegs: [ { originPlaceId: { iata: "LHR" }, destinationPlaceId: { iata: "DXB" }, 
@@ -34,7 +34,7 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+  console.log(`Server running at http://${hostname}:${port}`);
 });
 
 
@@ -47,12 +47,16 @@ axios.get(url).then(() => {
 const firstTry = async() => {
   try {
     const response = await axios.request(request1);
-    // console.log(response.data);
+    array.forEach(element => {
+      
+    });
+    console.log(response.data.content.results.itineraries);
   } catch (error) {
     console.error(error);
   }
 };
-firstTry().then( () => {
-  console.log('after first try');
-})
-
+// firstTry().then( () => {
+//   console.log('after first try');
+// })
+const read = require('./read.json');
+console.log(read.content.results.itineraries);
