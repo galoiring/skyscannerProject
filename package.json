@@ -1,0 +1,22 @@
+{
+  "name": "skyscannerproject",
+  "version": "1.0.0",
+  "description": "To run your web server write inside your terminal 'node app.js'.  Visit http://localhost:3000 and you will see a message saying \"Hello World\".",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/galoiring/skyscannerProject.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/galoiring/skyscannerProject/issues"
+  },
+  "homepage": "https://github.com/galoiring/skyscannerProject#readme",
+  "dependencies": {
+    "axios": "^1.4.0"
+  }
+}
