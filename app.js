@@ -1,81 +1,80 @@
-// To run use: "node app.js" on your terminal
-// Visit http://localhost:3000
-
 const http = require('http');
+const readline = require('readline');
+const axios = require('axios');
+
 const hostname = '127.0.0.1';
 const port = 3001;
-
-//add axios and build request for skyscanner
-const axios = require('axios');
-const url = 'http://' + hostname + ':' + port;
-const destinationPlaceMarket = 'US';
 const skyScannerUrl = 'https://skyscanner-api.p.rapidapi.com/v3/flights/live/search/create';
-const skyscannerBody = { query: { market: destinationPlaceMarket, locale: "en-GB", currency: "EUR", 
-  queryLegs: [ { originPlaceId: { iata: "LHR" }, destinationPlaceId: { iata: "DXB" }, 
-  date: { year: 2023, month: 9, day: 20 } } ], cabinClass: "CABIN_CLASS_ECONOMY", 
-  adults: 2, childrenAges: [ 3, 9 ] } };
+const destinationPlaceMarket = 'US';
 
-const request1 = {
-  method:"POST",
-  url: skyScannerUrl,
-  data: skyscannerBody,
-  headers :{
-    "X-RapidAPI-Key":"a7e2ee614cmshe7c5245f811fecfp1d32f1jsndd3d0f93ae87",
-    "X-RapidAPI-Host":"skyscanner-api.p.rapidapi.com",
-    "content-type":"application/json"
-  }
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function askQuestion(question) {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer);
+    });
+  });
 }
 
-
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World');
-});
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}`);
-});
-
-
-// create axios request to server
-axios.get(url).then(() => {
-  console.log('success');
-});
-
-// create async function to skyscanner
-const firstTry = async() => {
-  try {
-    const response = await axios.request(request1);
-    array.forEach(element => {
-      
-    });
-    console.log(response.data.content.results.itineraries);
-  } catch (error) {
-    console.error(error);
+const requestConfig = {
+  method: 'POST',
+  url: skyScannerUrl,
+  data: {
+    query: {
+      market: destinationPlaceMarket,
+      locale: 'en-GB',
+      currency: 'EUR',
+      queryLegs: [{
+        originPlaceId: { iata: 'LHR' },
+        destinationPlaceId: { iata: 'DXB' },
+        date: { year: 2023, month: 9, day: 20 }
+      }],
+      cabinClass: 'CABIN_CLASS_ECONOMY',
+      adults: 2,
+      childrenAges: [3, 9]
+    }
+  },
+  headers: {
+    'X-RapidAPI-Key': 'a7e2ee614cmshe7c5245f811fecfp1d32f1jsndd3d0f93ae87',
+    'X-RapidAPI-Host': 'skyscanner-api.p.rapidapi.com',
+    'Content-Type': 'application/json'
   }
 };
-// firstTry().then( () => {
-//   console.log('after first try');
-// })
-const read = require('./read.json');
-// console.log(read.content.results.itineraries);
-const key_1 = Object.keys(read.content.results.legs)[0]
-const key_2 = Object.keys(read.content.results.legs)[1]
 
-const flight_option_one = {
-  originId: read.content.results.legs[key_1].originPlaceId,
-  destinationId: read.content.results.legs[key_1].destinationPlaceId,
-  date: read.content.results.legs[key_1].departureDateTime,
-  price: read.content.results.itineraries[key_1].pricingOptions[0].price.amount,
+async function getUserInput() {
+  const airportCode = await askQuestion('Enter the airport code: ');
+  return airportCode;
 }
 
-const flight_option_two = {
-  originId: read.content.results.legs[key_2].originPlaceId,
-  destinationId: read.content.results.legs[key_2].destinationPlaceId,
-  date: read.content.results.legs[key_2].departureDateTime,
-  price: read.content.results.itineraries[key_2].pricingOptions[0].price.amount,
+async function makeRequest() {
+  try {
+    const airportCode = await getUserInput();
+    requestConfig.data.query.queryLegs[0].originPlaceId.iata = airportCode;
+    const response = await axios.request(requestConfig);
+    const itineraries = response.data.content.results.itineraries;
+    console.log(itineraries);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    rl.close();
+  }
 }
 
-console.log("*******************************")
-console.log(flight_option_two)
+function initializeServerAndGetData() {
+  const server = http.createServer((req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end('Hello World');
+  });
+
+  server.listen(port, hostname, () => {
+    console.log(`Server running at http://${hostname}:${port}`);
+    makeRequest();
+  });
+}
+
+initializeServerAndGetData();
