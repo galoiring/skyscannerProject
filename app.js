@@ -5,7 +5,7 @@ const http = require('http');
 const hostname = '127.0.0.1';
 const port = 3000;
 
-//add axios and request for skyscanner
+//add axios and build request for skyscanner
 const axios = require('axios');
 const url = 'http://' + hostname + ':' + port;
 const destinationPlaceMarket = 'UK';
@@ -14,27 +14,6 @@ const skyscannerBody = { query: { market: destinationPlaceMarket, locale: "en-GB
   queryLegs: [ { originPlaceId: { iata: "LHR" }, destinationPlaceId: { iata: "DXB" }, 
   date: { year: 2023, month: 9, day: 20 } } ], cabinClass: "CABIN_CLASS_ECONOMY", 
   adults: 2, childrenAges: [ 3, 9 ] } };
-
-
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World');
-});
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
-
-// axios.get(url).then(() => {
-//   console.log('success');
-// });
-
-// axios.post(skyScannerUrl, skyscannerBody).then(() => {
-//   console.log('success from skyscanner');
-// });
-
-
 
 const request1 = {
   method:"POST",
@@ -47,15 +26,33 @@ const request1 = {
   }
 }
 
-// axios(request1).then(response => {console.log('response')})
 
+const server = http.createServer((req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Hello World');
+});
+
+server.listen(port, hostname, () => {
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+
+
+// create axios request to server
+axios.get(url).then(() => {
+  console.log('success');
+});
+
+// create async function to skyscanner
 const firstTry = async() => {
   try {
     const response = await axios.request(request1);
-    console.log(response.data);
+    // console.log(response.data);
   } catch (error) {
     console.error(error);
   }
 };
-firstTry();
+firstTry().then( () => {
+  console.log('after first try');
+})
 
