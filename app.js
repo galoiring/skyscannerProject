@@ -7,6 +7,9 @@ const port = 3001;
 const skyScannerUrl = 'https://skyscanner-api.p.rapidapi.com/v3/flights/live/search/create';
 const destinationPlaceMarket = 'US';
 
+let originAirportCode = "TLV";
+let destinationAirportCode = "DEL";
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
@@ -46,22 +49,51 @@ const requestConfig = {
 };
 
 async function getUserInput() {
-  const airportCode = await askQuestion('Enter the airport code: ');
-  return airportCode;
+  const originCode = await askQuestion('Enter the origin airport code: ');
+  const destinationCode = await askQuestion('Enter the destination airport code: ');
+
+  return { originCode, destinationCode };
 }
 
 async function makeRequest() {
   try {
-    const airportCode = await getUserInput();
-    requestConfig.data.query.queryLegs[0].originPlaceId.iata = airportCode;
+    const userInput = await getUserInput();
+    originAirportCode = userInput.originCode;
+    destinationAirportCode = userInput.destinationCode;
+
+    requestConfig.data.query.queryLegs[0].originPlaceId.iata = originAirportCode;
+    requestConfig.data.query.queryLegs[0].destinationPlaceId.iata = destinationAirportCode;
+
     const response = await axios.request(requestConfig);
-    const itineraries = response.data.content.results.itineraries;
-    console.log(itineraries);
+    parsing(response);
   } catch (error) {
     console.error(error);
   } finally {
     rl.close();
   }
+}
+
+function parsing(response) {
+  const key_1 = Object.keys(response.data.content.results.legs)[0];
+  const key_2 = Object.keys(response.data.content.results.legs)[1];
+
+  const flight_option_one = {
+    originId: response.data.content.results.legs[key_1].originPlaceId,
+    destinationId: response.data.content.results.legs[key_1].destinationPlaceId,
+    date: response.data.content.results.legs[key_1].departureDateTime,
+    price: response.data.content.results.itineraries[key_1].pricingOptions[0].price.amount,
+  };
+
+  const flight_option_two = {
+    originId: response.data.content.results.legs[key_2].originPlaceId,
+    destinationId: response.data.content.results.legs[key_2].destinationPlaceId,
+    date: response.data.content.results.legs[key_2].departureDateTime,
+    price: response.data.content.results.itineraries[key_2].pricingOptions[0].price.amount,
+  };
+
+  console.log(`Looking for flight from ${originAirportCode} to ${destinationAirportCode}`);
+  console.log('Flight Option 1:', flight_option_one);
+  console.log('Flight Option 2:', flight_option_two);
 }
 
 function initializeServerAndGetData() {
@@ -77,4 +109,5 @@ function initializeServerAndGetData() {
   });
 }
 
+console.log(`Looking for flight from ${originAirportCode} to ${destinationAirportCode}`);
 initializeServerAndGetData();
