@@ -108,5 +108,4 @@ const initializeServerAndGetData = () => {
   });
 }
 
-console.log(`Looking for flight from ${originAirportCode} to ${destinationAirportCode}`);
 initializeServerAndGetData();
