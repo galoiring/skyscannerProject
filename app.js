@@ -9,19 +9,12 @@ const destinationPlaceMarket = 'US';
 
 let originAirportCode = "TLV";
 let destinationAirportCode = "DEL";
+let limit = 10;
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
-
-function askQuestion(question) {
-  return new Promise((resolve) => {
-    rl.question(question, (answer) => {
-      resolve(answer);
-    });
-  });
-}
 
 const requestConfig = {
   method: 'POST',
@@ -48,18 +41,28 @@ const requestConfig = {
   }
 };
 
-async function getUserInput() {
-  const originCode = await askQuestion('Enter the origin airport code: ');
-  const destinationCode = await askQuestion('Enter the destination airport code: ');
-
-  return { originCode, destinationCode };
+const askQuestion = (question) => {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer);
+    });
+  });
 }
 
-async function makeRequest() {
+const getUserInput = async () => {
+  const originCode = await askQuestion('Enter the origin airport code: ');
+  const destinationCode = await askQuestion('Enter the destination airport code: ');
+  const limit = await askQuestion('Enter the limit of flight: ');
+
+  return { originCode, destinationCode, limit };
+}
+
+const makeRequest = async () => {
   try {
     const userInput = await getUserInput();
     originAirportCode = userInput.originCode;
     destinationAirportCode = userInput.destinationCode;
+    limit = userInput.limit;
 
     requestConfig.data.query.queryLegs[0].originPlaceId.iata = originAirportCode;
     requestConfig.data.query.queryLegs[0].destinationPlaceId.iata = destinationAirportCode;
@@ -73,30 +76,26 @@ async function makeRequest() {
   }
 }
 
-function parsing(response) {
-  const key_1 = Object.keys(response.data.content.results.legs)[0];
-  const key_2 = Object.keys(response.data.content.results.legs)[1];
+const parsing = (response) => {
+  const legsArr = Object.keys(response.data.content.results.legs);
+  const legs = response.data.content.results.legs;
+  const itineraries = response.data.content.results.itineraries;
 
-  const flight_option_one = {
-    originId: response.data.content.results.legs[key_1].originPlaceId,
-    destinationId: response.data.content.results.legs[key_1].destinationPlaceId,
-    date: response.data.content.results.legs[key_1].departureDateTime,
-    price: response.data.content.results.itineraries[key_1].pricingOptions[0].price.amount,
-  };
-
-  const flight_option_two = {
-    originId: response.data.content.results.legs[key_2].originPlaceId,
-    destinationId: response.data.content.results.legs[key_2].destinationPlaceId,
-    date: response.data.content.results.legs[key_2].departureDateTime,
-    price: response.data.content.results.itineraries[key_2].pricingOptions[0].price.amount,
-  };
-
-  console.log(`Looking for flight from ${originAirportCode} to ${destinationAirportCode}`);
-  console.log('Flight Option 1:', flight_option_one);
-  console.log('Flight Option 2:', flight_option_two);
+  for (let i = 0; i < limit; ++i) {
+    const key = legsArr[i];
+    const flight_option = {
+      originId: legs[key].originPlaceId,
+      destinationId: legs[key].destinationPlaceId,
+      date: legs[key].departureDateTime,
+      price: itineraries[key].pricingOptions[0].price.amount,
+    }
+    console.log(`Flight Option ${i + 1}:`);
+    console.log();
+    console.log(flight_option);
+  }
 }
 
-function initializeServerAndGetData() {
+const initializeServerAndGetData = () => {
   const server = http.createServer((req, res) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain');
