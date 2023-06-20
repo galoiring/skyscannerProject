@@ -14,6 +14,8 @@ const destinationPlaceMarket = 'US';
 
 let originAirportCode = "TLV";
 let destinationAirportCode = "DEL";
+let limit = 10;
+let searchTerm = 'Lond';
 let limit = 4;
 
 // JSON format of the request configuration for axios
@@ -48,6 +50,61 @@ const hotelsRequestConfig = {
   headers: {
     'content-type': 'application/json',
     'X-RapidAPI-Key': 'a7e2ee614cmshe7c5245f811fecfp1d32f1jsndd3d0f93ae87',
+    'X-RapidAPI-Host': 'skyscanner-api.p.rapidapi.com',
+    'Content-Type': 'application/json'
+  }
+};
+
+const optionsForAutocomplete = {
+  method: 'POST',
+  url: 'https://skyscanner-api.p.rapidapi.com/v3/autosuggest/flights',
+  headers: {
+    'content-type': 'application/json',
+    'X-RapidAPI-Key': '9da54de026msh5bb0867e8c5b75ep1e76aajsnb2ca5fce3c19',
+    'X-RapidAPI-Host': 'skyscanner-api.p.rapidapi.com'
+  },
+  data: {
+    query: {
+      market: 'UK',
+      locale: 'en-GB',
+      searchTerm: searchTerm
+    }
+  }
+};
+
+const makeSearchRequest = async () => {
+  try {
+    const response = await axios.request(optionsForAutocomplete);
+    autocomplete_res = parseSearch(response)
+    console.log(autocomplete_res);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// TODO: check if type == PLACE_TYPE_AIRPORT and takes only those options
+const parseSearch = (response) => {
+  const name = response.data.places[0].name
+  const iataCode = response.data.places[0].iataCode
+  const hirarchy = response.data.places[0].hierarchy
+  return {name, iataCode, hirarchy}
+}
+
+const askQuestion = (question) => {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer);
+    });
+  });
+}
+
+const getUserInput = async () => {
+  const originCode = await askQuestion('Enter the origin airport code: ');
+  const destinationCode = await askQuestion('Enter the destination airport code: ');
+  const limit = await askQuestion('Enter the limit of flight: ');
+
+  return { originCode, destinationCode, limit };
+}
     'X-RapidAPI-Host': 'skyscanner-api.p.rapidapi.com'
   },
   data: {
@@ -147,3 +204,6 @@ makeRequest();
 // });
 
 
+
+// initializeServerAndGetData();
+makeSearchRequest()
