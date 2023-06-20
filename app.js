@@ -110,3 +110,4 @@ const initializeServerAndGetData = () => {
 }
 
 initializeServerAndGetData();
+console.log("Refael")
