@@ -25,7 +25,7 @@ const requestConfig = {
       locale: 'en-GB',
       currency: 'EUR',
       queryLegs: [{
-        originPlaceId: { iata: 'LHR' },
+        originPlaceId: { iata: 'TLV' },
         destinationPlaceId: { iata: 'DXB' },
         date: { year: 2023, month: 9, day: 20 }
       }],
@@ -59,13 +59,13 @@ const getUserInput = async () => {
 
 const makeRequest = async () => {
   try {
-    const userInput = await getUserInput();
-    originAirportCode = userInput.originCode;
-    destinationAirportCode = userInput.destinationCode;
-    limit = userInput.limit;
-
-    requestConfig.data.query.queryLegs[0].originPlaceId.iata = originAirportCode;
-    requestConfig.data.query.queryLegs[0].destinationPlaceId.iata = destinationAirportCode;
+    // const userInput = await getUserInput();
+    // originAirportCode = userInput.originCode;
+    // destinationAirportCode = userInput.destinationCode;
+    // limit = userInput.limit;
+    //
+    // requestConfig.data.query.queryLegs[0].originPlaceId.iata = originAirportCode;
+    // requestConfig.data.query.queryLegs[0].destinationPlaceId.iata = destinationAirportCode;
 
     const response = await axios.request(requestConfig);
     parsing(response);
@@ -80,12 +80,13 @@ const parsing = (response) => {
   const legsArr = Object.keys(response.data.content.results.legs);
   const legs = response.data.content.results.legs;
   const itineraries = response.data.content.results.itineraries;
+  const places = response.data.content.results.places;
 
   for (let i = 0; i < limit; ++i) {
     const key = legsArr[i];
     const flight_option = {
-      originId: legs[key].originPlaceId,
-      destinationId: legs[key].destinationPlaceId,
+      originName: `${places[legs[key].originPlaceId].name} - ${places[legs[key].originPlaceId].iata}` ,
+      destinationName: `${places[legs[key].destinationPlaceId].name} - ${places[legs[key].destinationPlaceId].iata}`,
       date: legs[key].departureDateTime,
       price: itineraries[key].pricingOptions[0].price.amount,
     }
