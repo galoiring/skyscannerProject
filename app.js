@@ -82,15 +82,17 @@ const makeSearchRequest = async () => {
   }
 }
 
-// TODO: check if type == PLACE_TYPE_AIRPORT and takes only those options.
-//this way it will make the first airport (probably the most common) iata code for the flight/hotels search
-
+//TODO: might need to improve the name so it will be the city name but the relevant airport iata Code
 // TODO: ask Refael if full city name needed for the hotels search or iata code is fine.
 const parseSearch = (response) => {
-  const name = response.data.places[0].name
-  const iataCode = response.data.places[0].iataCode
-  const hirarchy = response.data.places[0].hierarchy
-  return {name, iataCode, hirarchy}
+  for (let i = 0; i < limit; ++i) {
+    if(response.data.places[i].type === 'PLACE_TYPE_AIRPORT'){
+      const name = response.data.places[0].name
+      const iataCode = response.data.places[i].iataCode
+      const hirarchy = response.data.places[i].hierarchy
+      return {name, iataCode, hirarchy}
+    }
+  }
 }
 
 const askQuestion = (question) => {
