@@ -90,7 +90,7 @@ const makeSearchRequest = async () => {
 const parseSearch = (response) => {
   for (let i = 0; i < limit; ++i) {
     if(response.data.places[i].type === 'PLACE_TYPE_AIRPORT'){
-      const name = response.data.places[0].name
+      const name = response.data.places[0].cityName
       const iataCode = response.data.places[i].iataCode
       const hirarchy = response.data.places[i].hierarchy
       return {name, iataCode, hirarchy}
