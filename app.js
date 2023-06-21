@@ -5,7 +5,7 @@ const Validator = require('jsonschema').Validator;
 const valid = new Validator();
 const skyScannerFlightSchema = require('./skyScannerResponseSchema.json');
 
-const hostname = '127.0.0.1';
+const hostname = "127.0.0.1";
 const port = 3001;
 const skyScannerUrl = 'https://skyscanner-api.p.rapidapi.com/v3/flights/live/search/create';
 const url = hostname + port;
@@ -19,7 +19,7 @@ let limit = 10;
 
 //enter 3 char or more for search
 //this one will be converted with the autocomplete to iata airport code for requestConfig
-let searchTerm = 'Lond';
+let searchTerm = "Lond";
 let limit = 4;
 
 // JSON format of the request configuration for axios
@@ -60,43 +60,43 @@ const hotelsRequestConfig = {
 };
 
 const optionsForAutocomplete = {
-  method: 'POST',
-  url: 'https://skyscanner-api.p.rapidapi.com/v3/autosuggest/flights',
+  method: "POST",
+  url: "https://skyscanner-api.p.rapidapi.com/v3/autosuggest/flights",
   headers: {
-    'content-type': 'application/json',
-    'X-RapidAPI-Key': '9da54de026msh5bb0867e8c5b75ep1e76aajsnb2ca5fce3c19',
-    'X-RapidAPI-Host': 'skyscanner-api.p.rapidapi.com'
+    "content-type": "application/json",
+    "X-RapidAPI-Key": "9da54de026msh5bb0867e8c5b75ep1e76aajsnb2ca5fce3c19",
+    "X-RapidAPI-Host": "skyscanner-api.p.rapidapi.com",
   },
   data: {
     query: {
-      market: 'UK',
-      locale: 'en-GB',
-      searchTerm: searchTerm
-    }
-  }
+      market: "UK",
+      locale: "en-GB",
+      searchTerm: searchTerm,
+    },
+  },
 };
 
 const makeSearchRequest = async () => {
   try {
     const response = await axios.request(optionsForAutocomplete);
-    return parseSearch(response)
+    return parseSearch(response);
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 //TODO: might need to improve the name so it will be the city name but the relevant airport iata Code
 // TODO: ask Refael if full city name needed for the hotels search or iata code is fine.
 const parseSearch = (response) => {
   for (let i = 0; i < limit; ++i) {
-    if(response.data.places[i].type === 'PLACE_TYPE_AIRPORT'){
-      const name = response.data.places[0].cityName
-      const iataCode = response.data.places[i].iataCode
-      const hirarchy = response.data.places[i].hierarchy
-      return {name, iataCode, hirarchy}
+    if (response.data.places[i].type === "PLACE_TYPE_AIRPORT") {
+      const name = response.data.places[0].cityName;
+      const iataCode = response.data.places[i].iataCode;
+      const hirarchy = response.data.places[i].hierarchy;
+      return { name, iataCode, hirarchy };
     }
   }
-}
+};
 
 const askQuestion = (question) => {
   return new Promise((resolve) => {
@@ -104,12 +104,14 @@ const askQuestion = (question) => {
       resolve(answer);
     });
   });
-}
+};
 
 const getUserInput = async () => {
-  const originCode = await askQuestion('Enter the origin airport code: ');
-  const destinationCode = await askQuestion('Enter the destination airport code: ');
-  const limit = await askQuestion('Enter the limit of flight: ');
+  const originCode = await askQuestion("Enter the origin airport code: ");
+  const destinationCode = await askQuestion(
+    "Enter the destination airport code: "
+  );
+  const limit = await askQuestion("Enter the limit of flight: ");
 
   return { originCode, destinationCode, limit };
 }
@@ -153,7 +155,8 @@ const makeRequest = async () => {
     // requestConfig.data.query.queryLegs[0].originPlaceId.iata = originAirportCode;
     // requestConfig.data.query.queryLegs[0].destinationPlaceId.iata = destinationAirportCode;
 
-    requestConfig.data.query.queryLegs[0].originPlaceId.iata = searchResponse.iataCode;
+    requestConfig.data.query.queryLegs[0].originPlaceId.iata =
+      searchResponse.iataCode;
 
     const response = await axios.request(requestConfig);
     parsing(response);
@@ -214,16 +217,16 @@ const parsingFlights = (response) => {
 const initializeServerAndGetData = () => {
   const server = http.createServer((req, res) => {
     res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello World');
+    res.setHeader("Content-Type", "text/plain");
+    res.end("Hello World");
   });
   //
   // server.listen(port, hostname, () => {
   //   console.log(`Server running at http://${hostname}:${port}`);
-    makeSearchRequest().then((respones)=>{
-      makeFlightRequest(respones);
-        })
-  }
+  makeSearchRequest().then((respones) => {
+    makeFlightRequest(respones);
+  });
+};
 // )}
   return flightsArr;
 }
