@@ -1,6 +1,9 @@
 const http = require('http');
 const readline = require('readline');
 const axios = require('axios');
+const Validator = require('jsonschema').Validator;
+const valid = new Validator();
+const skyScannerFlightSchema = require('./skyScannerResponseSchema.json');
 
 const hostname = '127.0.0.1';
 const port = 3001;
@@ -73,7 +76,6 @@ const hotelsRequestConfig = {
   }
 };
 
-
 // make request and send to print
 const makeRequest = async () => {
   try {
@@ -98,9 +100,9 @@ const parsingHotels = (response) => {
       reate: key.numberOfStars,
       price: key.priceInfo.price,
     }
-    // console.log();
-    // console.log(`hotel option ${i + 1}:`);
-    // console.log(hotelOption);
+    console.log();
+    console.log(`hotel option ${i + 1}:`);
+    console.log(hotelOption);
     hotelArr.push(hotelOption);
   }
 
@@ -109,10 +111,12 @@ const parsingHotels = (response) => {
 
 // parse the flights response and print on CLI
 const parsingFlights = (response) => {
+  const responseToValidate = response.data;
+  if(valid.validate(responseToValidate,skyScannerFlightSchema,{throwFirst:true}).valid = false){
+    throw new Error(responseToValidate);
+  }
+  const {legs,itineraries,places}=response.data.content.results;
   const legsArr = Object.keys(response.data.content.results.legs);
-  const legs = response.data.content.results.legs;
-  const itineraries = response.data.content.results.itineraries;
-  const places = response.data.content.results.places;
   const flightsArr = [];
 
   for (let i = 0; i < limit; ++i) {
@@ -123,9 +127,9 @@ const parsingFlights = (response) => {
       date: legs[key].departureDateTime,
       price: itineraries[key].pricingOptions[0].price.amount,
     }
-    // console.log();
-    // console.log(`Flight Option ${i + 1}:`);
-    // console.log(flightOption);
+    console.log();
+    console.log(`Flight Option ${i + 1}:`);
+    console.log(flightOption);
     flightsArr.push(flightOption);
   }
 
@@ -141,3 +145,5 @@ makeRequest();
 // server.listen(port, hostname, () => {
 //   console.log(`Server running at http://${hostname}:${port}`);
 // });
+
+
