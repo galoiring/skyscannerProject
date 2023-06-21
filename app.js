@@ -7,6 +7,7 @@ const skyScannerFlightSchema = require('./skyScannerResponseSchema.json');
 
 const hostname = '127.0.0.1';
 const port = 3001;
+const skyScannerUrl = 'https://skyscanner-api.p.rapidapi.com/v3/flights/live/search/create';
 const url = hostname + port;
 const skyScannerflightsUrl = 'https://skyscanner-api.p.rapidapi.com/v3/flights/live/search/create';
 const skyScannerHotelstsUrl = 'https://skyscanner-api.p.rapidapi.com/v3e/hotels/live/search/create';
@@ -15,6 +16,9 @@ const destinationPlaceMarket = 'US';
 let originAirportCode = "TLV";
 let destinationAirportCode = "DEL";
 let limit = 10;
+
+//enter 3 char or more for search
+//this one will be converted with the autocomplete to iata airport code for requestConfig
 let searchTerm = 'Lond';
 let limit = 4;
 
@@ -29,7 +33,7 @@ const flightRequestConfig = {
   },
   data: {
     query: {
-      market: destinationPlaceMarket,
+      market: 'US',
       locale: 'en-GB',
       currency: 'EUR',
       queryLegs: [{
