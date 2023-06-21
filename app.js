@@ -75,8 +75,7 @@ const optionsForAutocomplete = {
 const makeSearchRequest = async () => {
   try {
     const response = await axios.request(optionsForAutocomplete);
-    autocomplete_res = parseSearch(response)
-    console.log(autocomplete_res);
+    return parseSearch(response)
   } catch (error) {
     console.error(error);
   }
@@ -138,9 +137,22 @@ const getUserInput = async () => {
   }
 };
 
+const makeFlightRequest = async (searchResponse) => {
 // make request and send to print
 const makeRequest = async () => {
   try {
+    // const userInput = await getUserInput();
+    // originAirportCode = userInput.originCode;
+    // destinationAirportCode = userInput.destinationCode;
+    // limit = userInput.limit;
+    //
+    // requestConfig.data.query.queryLegs[0].originPlaceId.iata = originAirportCode;
+    // requestConfig.data.query.queryLegs[0].destinationPlaceId.iata = destinationAirportCode;
+
+    requestConfig.data.query.queryLegs[0].originPlaceId.iata = searchResponse.iataCode;
+
+    const response = await axios.request(requestConfig);
+    parsing(response);
     const responseFlights = await axios.request(flightRequestConfig);
     const responseHotels = await axios.request(hotelsRequestConfig);
     const hotelArr = parsingHotels(responseHotels);
@@ -195,6 +207,20 @@ const parsingFlights = (response) => {
     flightsArr.push(flightOption);
   }
 
+const initializeServerAndGetData = () => {
+  const server = http.createServer((req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end('Hello World');
+  });
+  //
+  // server.listen(port, hostname, () => {
+  //   console.log(`Server running at http://${hostname}:${port}`);
+    makeSearchRequest().then((respones)=>{
+      makeFlightRequest(respones);
+        })
+  }
+// )}
   return flightsArr;
 }
 
@@ -210,5 +236,5 @@ makeRequest();
 
 
 
-// initializeServerAndGetData();
-makeSearchRequest()
+initializeServerAndGetData();
+// makeSearchRequest()
