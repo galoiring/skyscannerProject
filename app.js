@@ -5,8 +5,9 @@ const Validator = require('jsonschema').Validator;
 const valid = new Validator();
 const skyScannerFlightSchema = require('./skyScannerResponseSchema.json');
 
-const hostname = '127.0.0.1';
+const hostname = "127.0.0.1";
 const port = 3001;
+const skyScannerUrl = 'https://skyscanner-api.p.rapidapi.com/v3/flights/live/search/create';
 const url = hostname + port;
 const skyScannerflightsUrl = 'https://skyscanner-api.p.rapidapi.com/v3/flights/live/search/create';
 const skyScannerHotelstsUrl = 'https://skyscanner-api.p.rapidapi.com/v3e/hotels/live/search/create';
@@ -14,6 +15,11 @@ const destinationPlaceMarket = 'US';
 
 let originAirportCode = "TLV";
 let destinationAirportCode = "DEL";
+let limit = 10;
+
+//enter 3 char or more for search
+//this one will be converted with the autocomplete to iata airport code for requestConfig
+let searchTerm = "Lond";
 let limit = 4;
 
 // JSON format of the request configuration for axios
@@ -27,7 +33,7 @@ const flightRequestConfig = {
   },
   data: {
     query: {
-      market: destinationPlaceMarket,
+      market: 'US',
       locale: 'en-GB',
       currency: 'EUR',
       queryLegs: [{
@@ -48,6 +54,67 @@ const hotelsRequestConfig = {
   headers: {
     'content-type': 'application/json',
     'X-RapidAPI-Key': 'a7e2ee614cmshe7c5245f811fecfp1d32f1jsndd3d0f93ae87',
+    'X-RapidAPI-Host': 'skyscanner-api.p.rapidapi.com',
+    'Content-Type': 'application/json'
+  }
+};
+
+const optionsForAutocomplete = {
+  method: "POST",
+  url: "https://skyscanner-api.p.rapidapi.com/v3/autosuggest/flights",
+  headers: {
+    "content-type": "application/json",
+    "X-RapidAPI-Key": "9da54de026msh5bb0867e8c5b75ep1e76aajsnb2ca5fce3c19",
+    "X-RapidAPI-Host": "skyscanner-api.p.rapidapi.com",
+  },
+  data: {
+    query: {
+      market: "UK",
+      locale: "en-GB",
+      searchTerm: searchTerm,
+    },
+  },
+};
+
+const makeSearchRequest = async () => {
+  try {
+    const response = await axios.request(optionsForAutocomplete);
+    return parseSearch(response);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+//TODO: might need to improve the name so it will be the city name but the relevant airport iata Code
+// TODO: ask Refael if full city name needed for the hotels search or iata code is fine.
+const parseSearch = (response) => {
+  for (let i = 0; i < limit; ++i) {
+    if (response.data.places[i].type === "PLACE_TYPE_AIRPORT") {
+      const name = response.data.places[0].cityName;
+      const iataCode = response.data.places[i].iataCode;
+      const hirarchy = response.data.places[i].hierarchy;
+      return { name, iataCode, hirarchy };
+    }
+  }
+};
+
+const askQuestion = (question) => {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer);
+    });
+  });
+};
+
+const getUserInput = async () => {
+  const originCode = await askQuestion("Enter the origin airport code: ");
+  const destinationCode = await askQuestion(
+    "Enter the destination airport code: "
+  );
+  const limit = await askQuestion("Enter the limit of flight: ");
+
+  return { originCode, destinationCode, limit };
+}
     'X-RapidAPI-Host': 'skyscanner-api.p.rapidapi.com'
   },
   data: {
@@ -76,9 +143,23 @@ const hotelsRequestConfig = {
   }
 };
 
+const makeFlightRequest = async (searchResponse) => {
 // make request and send to print
 const makeRequest = async () => {
   try {
+    // const userInput = await getUserInput();
+    // originAirportCode = userInput.originCode;
+    // destinationAirportCode = userInput.destinationCode;
+    // limit = userInput.limit;
+    //
+    // requestConfig.data.query.queryLegs[0].originPlaceId.iata = originAirportCode;
+    // requestConfig.data.query.queryLegs[0].destinationPlaceId.iata = destinationAirportCode;
+
+    requestConfig.data.query.queryLegs[0].originPlaceId.iata =
+      searchResponse.iataCode;
+
+    const response = await axios.request(requestConfig);
+    parsing(response);
     const responseFlights = await axios.request(flightRequestConfig);
     const responseHotels = await axios.request(hotelsRequestConfig);
     const hotelArr = parsingHotels(responseHotels);
@@ -133,6 +214,20 @@ const parsingFlights = (response) => {
     flightsArr.push(flightOption);
   }
 
+const initializeServerAndGetData = () => {
+  const server = http.createServer((req, res) => {
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "text/plain");
+    res.end("Hello World");
+  });
+  //
+  // server.listen(port, hostname, () => {
+  //   console.log(`Server running at http://${hostname}:${port}`);
+  makeSearchRequest().then((respones) => {
+    makeFlightRequest(respones);
+  });
+};
+// )}
   return flightsArr;
 }
 
@@ -147,3 +242,6 @@ makeRequest();
 // });
 
 
+
+initializeServerAndGetData();
+// makeSearchRequest()
