@@ -37,9 +37,6 @@
             },
             "alliances": {
               "type": "object"
-            },
-            "omer":{
-              "type":"object"
             }
           },
           "required": [
@@ -49,8 +46,7 @@
             "places",
             "carriers",
             "agents",
-            "alliances",
-            "omer"
+            "alliances"
           ]
         },
         "stats": {

@@ -18,8 +18,9 @@
   "homepage": "https://github.com/galoiring/skyscannerProject#readme",
   "dependencies": {
     "axios": "^1.4.0",
-    "jsonschema": "^1.4.1"
-    "axios": "^1.4.0"
+    "jsonschema": "^1.4.1",
+    "validator": "^13.9.0",
+    "Validator": "^1.1.4"
   },
   "devDependencies": {
     "prettier": "2.8.8"
