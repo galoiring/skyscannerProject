@@ -6,7 +6,8 @@ const valid = new Validator();
 const skyScannerFlightSchema = require("./skyScannerFlightResponseSchema.json");
 const skyScannerHotelSchema = require("./skyScannerHotelResponseSchema.json");
 const fs = require("fs");
-const e = require("express");
+const express = require("express");
+const iataJson = require('./iataSwap.json')
 
 const hostname = "127.0.0.1";
 const port = 3001;
@@ -274,6 +275,7 @@ const parsingFlights = (response) => {
   return flightsArr;
 };
 
+// init the program, pass true to makeRequest for get response from server, and false for file
 const initializeServerAndGetData = () => {
   const server = http.createServer((req, res) => {
     res.statusCode = 200;
@@ -298,3 +300,17 @@ const initializeServerAndGetData = () => {
 // });
 
 initializeServerAndGetData();
+
+const iataCode = () => {
+  const array = [];
+  Object.keys(iataJson).forEach((a) => {
+    if (a.includes(searchTerm) == true) {
+      array.push(a);
+    }
+  })
+
+  return array;
+}
+
+iataCode().forEach((item) => console.log(item));
+console.log("****************************************************************")
