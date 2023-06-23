@@ -184,17 +184,27 @@ const makeRequest = (searchResponse, readFromServer) => {
   let hotelArr;
   if (readFromServer == true) {
     requestFromServer(searchResponse).then(({ flightsResponse, hotelsResponse }) => {
-      flightsArr = parsingFlights(flightsResponse.data);
-      hotelArr = parsingHotels(hotelsResponse.data);
-      writeResponseToJSONFile(flightsResponse.data, 'flightResponse');
-      console.log("successed to write flights response into file")
-      writeResponseToJSONFile(hotelsResponse.data, 'hotelsResponse');
-      console.log("successed to write hotels response into file")
+      try {
+        flightsArr = parsingFlights(flightsResponse.data);
+        hotelArr = parsingHotels(hotelsResponse.data);
+        writeResponseToJSONFile(flightsResponse.data, 'flightResponse');
+        console.log("successed to write flights response into file")
+        writeResponseToJSONFile(hotelsResponse.data, 'hotelsResponse');
+        console.log("successed to write hotels response into file")
+      } catch (err) {
+        console.log(err + " failed to write or parse");
+      }
     })
   } else {
     const { flightsResponse, hotelsResponse } = requestFromFile();
-    flightsArr = parsingFlights(flightsResponse);
-    hotelArr = parsingHotels(hotelsResponse);
+    try {
+      flightsArr = parsingFlights(flightsResponse);
+      hotelArr = parsingHotels(hotelsResponse);
+    } catch (err) {
+      {
+        console.log(err + " failed from catch");
+      }
+    }
   }
 
   return { flightsArr, hotelArr }
@@ -209,9 +219,14 @@ const validateResponse = (response, schemaToValid, serverType) => {
   console.log(`${serverType} valid: ${ValidatorResult.valid}`);
 }
 // parse the hotels response and print on CLI
-const parsingHotels = (response) => {
+function parsingHotels(response) {
   validateResponse(response, skyScannerHotelSchema, "hotel");
   const hotels = response.content.results.hotels;
+
+  if (Object.keys(hotels).length == 0) {
+    throw new Error(`hotels is empty`);
+  }
+
   const hotelArr = [];
   for (let i = 0; i < limit; ++i) {
     const key = hotels[i];
@@ -236,9 +251,8 @@ const parsingFlights = (response) => {
   const legsArr = Object.keys(response.content.results.legs);
   const flightsArr = [];
 
-  if (Object.keys(legs).length == 0) {
-    throw new Error(`legs is empty, ${responseToValidate.status}`);
-    initializeServerAndGetData();
+  if (Object.keys(legs).length == 0 || Object.keys(itineraries).length == 0) {
+    throw new Error(`legs/itineraries is empty, ${response.status}`);
   }
 
   for (let i = 0; i < limit; ++i) {
