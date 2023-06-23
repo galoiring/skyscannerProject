@@ -1,0 +1,800 @@
+{
+  "type": "object",
+  "required": [
+    "sessionToken",
+    "status",
+    "action",
+    "content"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "sessionToken": {
+      "type": "string",
+      "description": "Session token that is used to poll."
+    },
+    "status": {
+      "type": "string",
+      "description": "Operation result.",
+      "enum": [
+        "RESULT_STATUS_UNSPECIFIED",
+        "RESULT_STATUS_COMPLETE",
+        "RESULT_STATUS_INCOMPLETE",
+        "RESULT_STATUS_FAILED"
+      ]
+    },
+    "action": {
+      "type": "string",
+      "description": "TODO",
+      "enum": [
+        "RESULT_ACTION_UNSPECIFIED",
+        "RESULT_ACTION_REPLACED",
+        "RESULT_ACTION_NOT_MODIFIED",
+        "RESULT_ACTION_OMITTED"
+      ]
+    },
+    "content": {
+      "type": "object",
+      "required": [
+        "results",
+        "stats",
+        "sortingOptions"
+      ],
+      "description": "Search content object containing results and metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "results": {
+          "type": "object",
+          "required": [
+            "itineraries",
+            "legs",
+            "segments",
+            "places",
+            "carriers",
+            "agents",
+            "alliances"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "itineraries": {
+              "type": "object",
+              "description": "Itineraries search results data.",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "pricingOptions",
+                  "legIds"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "pricingOptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "price",
+                        "agentIds",
+                        "items",
+                        "transferType",
+                        "id"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "price": {
+                          "description": "**Omitted**"
+                        },
+                        "agentIds": {
+                          "description": "**Omitted**"
+                        },
+                        "items": {
+                          "description": "**Omitted**"
+                        },
+                        "transferType": {
+                          "description": "**Omitted**"
+                        },
+                        "id": {
+                          "description": "**Omitted**"
+                        }
+                      }
+                    }
+                  },
+                  "legIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "sustainabilityData": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "properties": {
+                      "isEcoContender": {
+                        "type": "boolean"
+                      },
+                      "ecoContenderDelta": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "legs": {
+              "type": "object",
+              "description": "Legs search results data.",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "originPlaceId",
+                  "destinationPlaceId",
+                  "departureDateTime",
+                  "arrivalDateTime",
+                  "durationInMinutes",
+                  "stopCount",
+                  "marketingCarrierIds",
+                  "operatingCarrierIds",
+                  "segmentIds"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "originPlaceId": {
+                    "type": "string",
+                    "description": "Leg origin id."
+                  },
+                  "destinationPlaceId": {
+                    "type": "string",
+                    "description": "Leg destination id."
+                  },
+                  "departureDateTime": {
+                    "type": "object",
+                    "required": [
+                      "year",
+                      "month",
+                      "day",
+                      "hour",
+                      "minute",
+                      "second"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "year": {
+                        "type": "number",
+                        "description": "Year in YYYY format. E.g. `2022`."
+                      },
+                      "month": {
+                        "type": "number",
+                        "description": "Month in int value. E.g. `1` is January or `10` is October."
+                      },
+                      "day": {
+                        "type": "number",
+                        "description": "Day in int value. E.g. `5` or `28`."
+                      },
+                      "hour": {
+                        "type": "number",
+                        "description": "Hour in int value. E.g. `3` or `12`."
+                      },
+                      "minute": {
+                        "type": "number",
+                        "description": "Minute in int value. E.g. `2` or `52`."
+                      },
+                      "second": {
+                        "type": "number",
+                        "description": "Second in int value. E.g. `1` or `46`."
+                      }
+                    }
+                  },
+                  "arrivalDateTime": {
+                    "type": "object",
+                    "required": [
+                      "year",
+                      "month",
+                      "day",
+                      "hour",
+                      "minute",
+                      "second"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "year": {
+                        "type": "number",
+                        "description": "Year in YYYY format. E.g. `2022`."
+                      },
+                      "month": {
+                        "type": "number",
+                        "description": "Month in int value. E.g. `1` is January or `10` is October."
+                      },
+                      "day": {
+                        "type": "number",
+                        "description": "Day in int value. E.g. `5` or `28`."
+                      },
+                      "hour": {
+                        "type": "number",
+                        "description": "Hour in int value. E.g. `3` or `12`."
+                      },
+                      "minute": {
+                        "type": "number",
+                        "description": "Minute in int value. E.g. `2` or `52`."
+                      },
+                      "second": {
+                        "type": "number",
+                        "description": "Second in int value. E.g. `1` or `46`."
+                      }
+                    }
+                  },
+                  "durationInMinutes": {
+                    "type": "number",
+                    "description": "Leg duration in minutes."
+                  },
+                  "stopCount": {
+                    "type": "number",
+                    "description": "Number of stops."
+                  },
+                  "marketingCarrierIds": {
+                    "type": "array",
+                    "description": "The carriers selling the flight.",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "operatingCarrierIds": {
+                    "type": "array",
+                    "description": "The carriers operating the flight.",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "segmentIds": {
+                    "type": "array",
+                    "description": "List of segment IDs.",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "segments": {
+              "type": "object",
+              "description": "Segments search results data.",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "originPlaceId",
+                  "destinationPlaceId",
+                  "departureDateTime",
+                  "arrivalDateTime",
+                  "durationInMinutes",
+                  "marketingCarrierId",
+                  "operatingCarrierId"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "originPlaceId": {
+                    "type": "string",
+                    "description": "Segment origin place id."
+                  },
+                  "destinationPlaceId": {
+                    "type": "string",
+                    "description": "Segment destination place id."
+                  },
+                  "departureDateTime": {
+                    "type": "object",
+                    "required": [
+                      "year",
+                      "month",
+                      "day",
+                      "hour",
+                      "minute",
+                      "second"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "year": {
+                        "type": "number",
+                        "description": "Year in YYYY format. E.g. `2022`."
+                      },
+                      "month": {
+                        "type": "number",
+                        "description": "Month in int value. E.g. `1` is January or `10` is October."
+                      },
+                      "day": {
+                        "type": "number",
+                        "description": "Day in int value. E.g. `5` or `28`."
+                      },
+                      "hour": {
+                        "type": "number",
+                        "description": "Hour in int value. E.g. `3` or `12`."
+                      },
+                      "minute": {
+                        "type": "number",
+                        "description": "Minute in int value. E.g. `2` or `52`."
+                      },
+                      "second": {
+                        "type": "number",
+                        "description": "Second in int value. E.g. `1` or `46`."
+                      }
+                    }
+                  },
+                  "arrivalDateTime": {
+                    "type": "object",
+                    "required": [
+                      "year",
+                      "month",
+                      "day",
+                      "hour",
+                      "minute",
+                      "second"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "year": {
+                        "type": "number",
+                        "description": "Year in YYYY format. E.g. `2022`."
+                      },
+                      "month": {
+                        "type": "number",
+                        "description": "Month in int value. E.g. `1` is January or `10` is October."
+                      },
+                      "day": {
+                        "type": "number",
+                        "description": "Day in int value. E.g. `5` or `28`."
+                      },
+                      "hour": {
+                        "type": "number",
+                        "description": "Hour in int value. E.g. `3` or `12`."
+                      },
+                      "minute": {
+                        "type": "number",
+                        "description": "Minute in int value. E.g. `2` or `52`."
+                      },
+                      "second": {
+                        "type": "number",
+                        "description": "Second in int value. E.g. `1` or `46`."
+                      }
+                    }
+                  },
+                  "durationInMinutes": {
+                    "type": "number",
+                    "description": "Duration of flight in minutes."
+                  },
+                  "marketingFlightNumber": {
+                    "type": "string",
+                    "description": "Flight number. E.g. `146`, `1712`."
+                  },
+                  "marketingCarrierId": {
+                    "type": "string",
+                    "description": "The carrier id selling the flight."
+                  },
+                  "operatingCarrierId": {
+                    "type": "string",
+                    "description": "The carrier id operating the flight."
+                  }
+                }
+              }
+            },
+            "places": {
+              "type": "object",
+              "description": "The place details.",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "entityId",
+                  "parentId",
+                  "name",
+                  "type"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "entityId": {
+                    "type": "string",
+                    "description": "A unique ID for the place."
+                  },
+                  "parentId": {
+                    "type": "string",
+                    "description": "A reference to another place, i.e. an airport can have a parent place which is a city."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The localised name of the place."
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "The type of the place.",
+                    "enum": [
+                      "PLACE_TYPE_UNSPECIFIED",
+                      "PLACE_TYPE_AIRPORT",
+                      "PLACE_TYPE_CITY",
+                      "PLACE_TYPE_COUNTRY",
+                      "PLACE_TYPE_CONTINENT"
+                    ]
+                  },
+                  "iata": {
+                    "type": "string",
+                    "description": "The IATA code of the place. It will only be set for airports and cities."
+                  },
+                  "coordinates": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "latitude": {
+                        "type": "number"
+                      },
+                      "longitude": {
+                        "type": "number"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "carriers": {
+              "type": "object",
+              "description": "Carrier's search results data.",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Carrier name e.g. `British Airways`."
+                  },
+                  "allianceId": {
+                    "type": "string",
+                    "description": "Alliance id."
+                  },
+                  "imageUrl": {
+                    "type": "string",
+                    "description": "Carrier image url."
+                  },
+                  "iata": {
+                    "type": "string",
+                    "description": "ATA code of carrier."
+                  }
+                }
+              }
+            },
+            "agents": {
+              "type": "object",
+              "description": "Agent's search results data.",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the agent. E.g. `easyJet`, `Ryanair`, `Air France`."
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "AGENT_TYPE_UNSPECIFIED",
+                      "AGENT_TYPE_TRAVEL_AGENT",
+                      "AGENT_TYPE_AIRLINE"
+                    ]
+                  },
+                  "imageUrl": {
+                    "type": "string",
+                    "description": "Agent image url."
+                  },
+                  "feedbackCount": {
+                    "type": "number",
+                    "description": "Number of users who gave feedback."
+                  },
+                  "rating": {
+                    "type": "number",
+                    "description": "Agent rating"
+                  },
+                  "ratingBreakdown": {
+                    "type": "object",
+                    "description": "Agent rating split by different criteria.",
+                    "properties": {
+                      "customerService": {
+                        "type": "number",
+                        "description": "Agent customer service rating."
+                      },
+                      "reliablePrices": {
+                        "type": "number",
+                        "description": "Agent reliable prices rating."
+                      },
+                      "clearExtraFees": {
+                        "type": "number",
+                        "description": "Agent clear extra fees rating."
+                      },
+                      "easyOfBooking": {
+                        "type": "number",
+                        "description": "Agent ease of booking rating."
+                      },
+                      "other": {
+                        "type": "number",
+                        "description": "Agent other rating."
+                      }
+                    }
+                  },
+                  "isOptimisedForMobile": {
+                    "type": "boolean",
+                    "description": "Indicates if partner website is optimized for mobile."
+                  }
+                }
+              }
+            },
+            "alliances": {
+              "type": "object",
+              "description": "Alliances search results data.",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "description": "Alliance details. An airline alliance is an aviation industry arrangement between two or more airlines agreeing to cooperate on a substantial level. For example `Star Alliance`.",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Alliance name. E.g. `Star Alliance`."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "stats": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "itineraries": {
+              "type": "object",
+              "description": "Object containing statistics for itineraries.",
+              "additionalProperties": false,
+              "properties": {
+                "minDuration": {
+                  "type": "number",
+                  "description": "Time of shortest itinerary."
+                },
+                "maxDuration": {
+                  "type": "number",
+                  "description": "Time of longest itinerary."
+                },
+                "total": {
+                  "type": "object",
+                  "description": "Itinerary summary for a category.",
+                  "additionalProperties": false,
+                  "properties": {
+                    "count": {
+                      "type": "number",
+                      "description": "Number of itineraries for a given category i.e.: direct, has one stop, has two or more stops etc."
+                    },
+                    "minPrice": {
+                      "type": "object",
+                      "required": [
+                        "price",
+                        "agentIds",
+                        "items",
+                        "transferType",
+                        "id"
+                      ],
+                      "additionalProperties": false,
+                      "properties": {
+                        "price": {
+                          "description": "**Omitted**"
+                        },
+                        "agentIds": {
+                          "description": "**Omitted**"
+                        },
+                        "items": {
+                          "description": "**Omitted**"
+                        },
+                        "transferType": {
+                          "description": "**Omitted**"
+                        },
+                        "id": {
+                          "description": "**Omitted**"
+                        }
+                      }
+                    }
+                  }
+                },
+                "stops": {
+                  "type": "object",
+                  "description": "Itinerary stats based on number of stops.",
+                  "additionalProperties": false,
+                  "properties": {
+                    "direct": {
+                      "type": "object",
+                      "description": "Itinerary stats based on stops.",
+                      "additionalProperties": false,
+                      "properties": {
+                        "total": {
+                          "type": "object",
+                          "description": "Itinerary summary for a category.",
+                          "additionalProperties": false,
+                          "properties": {
+                            "count": {
+                              "description": "**Omitted**"
+                            },
+                            "minPrice": {
+                              "description": "**Omitted**"
+                            }
+                          }
+                        },
+                        "ticketTypes": {
+                          "type": "object",
+                          "description": "Itinerary stats based on type of ticket.",
+                          "additionalProperties": false,
+                          "properties": {
+                            "singleTicket": {
+                              "description": "**Omitted**"
+                            },
+                            "multiTicketNonNpt": {
+                              "description": "**Omitted**"
+                            },
+                            "multiTicketNpt": {
+                              "description": "**Omitted**"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "oneStop": {
+                      "type": "object",
+                      "description": "Itinerary stats based on stops.",
+                      "additionalProperties": false,
+                      "properties": {
+                        "total": {
+                          "type": "object",
+                          "description": "Itinerary summary for a category.",
+                          "additionalProperties": false,
+                          "properties": {
+                            "count": {
+                              "description": "**Omitted**"
+                            },
+                            "minPrice": {
+                              "description": "**Omitted**"
+                            }
+                          }
+                        },
+                        "ticketTypes": {
+                          "type": "object",
+                          "description": "Itinerary stats based on type of ticket.",
+                          "additionalProperties": false,
+                          "properties": {
+                            "singleTicket": {
+                              "description": "**Omitted**"
+                            },
+                            "multiTicketNonNpt": {
+                              "description": "**Omitted**"
+                            },
+                            "multiTicketNpt": {
+                              "description": "**Omitted**"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "twoPlusStops": {
+                      "type": "object",
+                      "description": "Itinerary stats based on stops.",
+                      "additionalProperties": false,
+                      "properties": {
+                        "total": {
+                          "type": "object",
+                          "description": "Itinerary summary for a category.",
+                          "additionalProperties": false,
+                          "properties": {
+                            "count": {
+                              "description": "**Omitted**"
+                            },
+                            "minPrice": {
+                              "description": "**Omitted**"
+                            }
+                          }
+                        },
+                        "ticketTypes": {
+                          "type": "object",
+                          "description": "Itinerary stats based on type of ticket.",
+                          "additionalProperties": false,
+                          "properties": {
+                            "singleTicket": {
+                              "description": "**Omitted**"
+                            },
+                            "multiTicketNonNpt": {
+                              "description": "**Omitted**"
+                            },
+                            "multiTicketNpt": {
+                              "description": "**Omitted**"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasChangeAirportTransfer": {
+                  "type": "boolean",
+                  "description": "Indicates if response contains itineraries with airport transfers."
+                }
+              }
+            }
+          }
+        },
+        "sortingOptions": {
+          "type": "object",
+          "required": [
+            "best",
+            "cheapest",
+            "fastest"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "best": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "score",
+                  "itineraryId"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "score": {
+                    "type": "number"
+                  },
+                  "itineraryId": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "cheapest": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "score",
+                  "itineraryId"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "score": {
+                    "type": "number"
+                  },
+                  "itineraryId": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "fastest": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "score",
+                  "itineraryId"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "score": {
+                    "type": "number"
+                  },
+                  "itineraryId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

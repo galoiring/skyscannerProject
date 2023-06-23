@@ -1,0 +1,54 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "sessionToken": {
+        "type": "string",
+        "description": "Session token that is used to poll."
+      },
+      "page": {
+        "type": "number",
+        "description": "Number of current page results."
+      },
+      "totalPages": {
+        "type": "number",
+        "description": "Total number of pages."
+      },
+      "content": {
+        "type": "object",
+        "description": "Search content object containing results and metadata.",
+        "additionalProperties": false,
+        "properties": {
+          "results": {
+            "type": "object",
+            "properties": {
+              "hotels": {
+                "type": "array",
+                "description": "List of hotels from a search.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              },
+              "priceType": {
+                "type": "string",
+                "enum": [
+                  "price-per-night"
+                ]
+              },
+              "summary": {
+                "type": "object"
+              },
+              "pricePolicy": {
+                "type": "string",
+                "enum": [
+                  "TAXES_INCLUDED",
+                  "TAXES_NOT_INCLUDED"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
