@@ -7,103 +7,20 @@ const skyScannerFlightSchema = require("./skyScannerFlightResponseSchema.json");
 const skyScannerHotelSchema = require("./skyScannerHotelResponseSchema.json");
 const fs = require("fs");
 const express = require("express");
-const iataJson = require('./iataSwap.json')
+const {convertCurrency} = require('./convertCurrency');
+
 
 const hostname = "127.0.0.1";
 const port = 3001;
 const url = hostname + port;
-const skyScannerflightsUrl =
-  "https://skyscanner-api.p.rapidapi.com/v3/flights/live/search/create";
-const skyScannerHotelstsUrl =
-  "https://skyscanner-api.p.rapidapi.com/v3e/hotels/live/search/create";
-const destinationPlaceMarket = "US";
 
-let originAirportCode = "TLV";
-let destinationAirportCode = "DEL";
 let limit = 4;
-
-//enter 3 char or more for search
-//this one will be converted with the autocomplete to iata airport code for requestConfig
-let searchTerm = "Lond";
+let currencyFromType = "USD";
+let currencyToType = "ILS";
+let exchangeRate;
 
 // JSON format of the request configuration for axios
-const flightRequestConfig = {
-  method: "POST",
-  url: skyScannerflightsUrl,
-  headers: {
-    "Content-Type": "application/json",
-    "X-RapidAPI-Key": "a7e2ee614cmshe7c5245f811fecfp1d32f1jsndd3d0f93ae87",
-    "X-RapidAPI-Host": "skyscanner-api.p.rapidapi.com",
-  },
-  data: {
-    query: {
-      market: "US",
-      locale: "en-GB",
-      currency: "EUR",
-      queryLegs: [
-        {
-          originPlaceId: { iata: originAirportCode },
-          destinationPlaceId: { iata: destinationAirportCode },
-          date: { year: 2023, month: 9, day: 20 },
-        },
-      ],
-      cabinClass: "CABIN_CLASS_ECONOMY",
-      adults: 2,
-      childrenAges: [3, 9],
-    },
-  },
-};
-
-const hotelsRequestConfig = {
-  method: "POST",
-  url: skyScannerHotelstsUrl,
-  headers: {
-    "content-type": "application/json",
-    "X-RapidAPI-Key": "a7e2ee614cmshe7c5245f811fecfp1d32f1jsndd3d0f93ae87",
-    "X-RapidAPI-Host": "skyscanner-api.p.rapidapi.com",
-  },
-  data: {
-    query: {
-      market: destinationPlaceMarket,
-      locale: "en-GB",
-      currency: "GBP",
-      adults: 2,
-      placeId: {
-        entityId: "27539564",
-      },
-      checkInDate: {
-        year: 2023,
-        month: 9,
-        day: 3,
-      },
-      checkOutDate: {
-        year: 2023,
-        month: 9,
-        day: 12,
-      },
-      rooms: 1,
-      childrenAges: [4, 2],
-      sortBy: "RELEVANCE_DESC",
-    },
-  },
-};
-
-const optionsForAutocomplete = {
-  method: "POST",
-  url: "https://skyscanner-api.p.rapidapi.com/v3/autosuggest/flights",
-  headers: {
-    "content-type": "application/json",
-    "X-RapidAPI-Key": "9da54de026msh5bb0867e8c5b75ep1e76aajsnb2ca5fce3c19",
-    "X-RapidAPI-Host": "skyscanner-api.p.rapidapi.com",
-  },
-  data: {
-    query: {
-      market: "UK",
-      locale: "en-GB",
-      searchTerm: searchTerm,
-    },
-  },
-};
+const { flightRequestConfig, hotelsRequestConfig, optionsForAutocomplete } = require('./configVariables');
 
 const makeSearchRequest = async () => {
   try {
@@ -251,6 +168,12 @@ const parsingFlights = (response) => {
   const { legs, itineraries, places } = response.content.results;
   const legsArr = Object.keys(response.content.results.legs);
   const flightsArr = [];
+  try {
+    exchangeRate = convertCurrency();
+    console.log(exchangeRate + "exchangeRate");
+  }catch(err) {
+    exchangeRate = 0.36;
+  }
 
   if (Object.keys(legs).length == 0 || Object.keys(itineraries).length == 0) {
     throw new Error(`legs/itineraries is empty, ${response.status}`);
@@ -264,7 +187,7 @@ const parsingFlights = (response) => {
       destinationName: `${places[legs[key].destinationPlaceId].name} - ${places[legs[key].destinationPlaceId].iata
         }`,
       date: legs[key].departureDateTime,
-      price: itineraries[key].pricingOptions[0].price.amount,
+      price: `${itineraries[key].pricingOptions[0].price.amount / exchangeRate} ${currencyToType}`,
     };
     console.log();
     console.log(`Flight Option ${i + 1}:`);
@@ -301,16 +224,4 @@ const initializeServerAndGetData = () => {
 
 initializeServerAndGetData();
 
-const iataCode = () => {
-  const array = [];
-  Object.keys(iataJson).forEach((a) => {
-    if (a.includes(searchTerm) == true) {
-      array.push(a);
-    }
-  })
 
-  return array;
-}
-
-iataCode().forEach((item) => console.log(item));
-console.log("****************************************************************")
