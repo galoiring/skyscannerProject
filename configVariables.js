@@ -9,7 +9,7 @@ let destinationAirportCode = "DEL";
 //enter 3 char or more for search
 //this one will be converted with the autocomplete to iata airport code for requestConfig
 let searchTerm = "Lond";
-const { currencyToType } = require("./app.js");
+const currencyToType = require("./app.js");
 
 const flightRequestConfig = {
   method: "POST",
