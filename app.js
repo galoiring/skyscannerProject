@@ -20,6 +20,7 @@ const {
   flightRequestConfig,
   hotelsRequestConfig,
   optionsForAutocomplete,
+  ChatGptConfig,
 } = require("./configVariables");
 
 const makeSearchRequest = async () => {
@@ -199,6 +200,16 @@ const parsingFlights = (response) => {
   return flightsArr;
 };
 
+const makeChatGptRequest = async (message) => {
+  ChatGptConfig.data.messages[0].content = message;
+  try {
+    const response = await axios.request(ChatGptConfig);
+    console.log(response.data.choices[0].message);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 // init the program, pass true to makeRequest for get response from server, and false for file
 const initializeServerAndGetData = () => {
   const server = http.createServer((req, res) => {
@@ -223,4 +234,5 @@ const initializeServerAndGetData = () => {
 //   console.log(`Server running at http://${hostname}:${port}`);
 // });
 
-initializeServerAndGetData();
+// initializeServerAndGetData();
+makeChatGptRequest((message = "what is the meaning of life? "));
