@@ -4,7 +4,7 @@
 	"action": "RESULT_ACTION_REPLACED",
 	"content": {
 		"results": {
-			"itineraries": {
+				"itineraries": {
 				"13554-2309201710--32132,-32672-1-10957-2309210755": {
 					"pricingOptions": [
 						{
