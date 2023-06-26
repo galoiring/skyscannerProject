@@ -6,21 +6,21 @@ const valid = new Validator();
 const skyScannerFlightSchema = require("./skyScannerFlightResponseSchema.json");
 const skyScannerHotelSchema = require("./skyScannerHotelResponseSchema.json");
 const fs = require("fs");
-const express = require("express");
-const {convertCurrency} = require('./convertCurrency');
-
+// const express = require("express");
 
 const hostname = "127.0.0.1";
 const port = 3001;
 const url = hostname + port;
 
 let limit = 4;
-let currencyFromType = "USD";
 let currencyToType = "ILS";
-let exchangeRate;
 
 // JSON format of the request configuration for axios
-const { flightRequestConfig, hotelsRequestConfig, optionsForAutocomplete } = require('./configVariables');
+const {
+  flightRequestConfig,
+  hotelsRequestConfig,
+  optionsForAutocomplete,
+} = require("./configVariables");
 
 const makeSearchRequest = async () => {
   try {
@@ -47,14 +47,18 @@ const parseSearch = (response) => {
 
 // convert response to JSON and writing to a file
 const writeResponseToJSONFile = (response, fileName) => {
-  fs.writeFile(`${fileName}.json`, JSON.stringify(response, null, "\t"), (error) => {
-    // in case of a writing problem
-    if (error) {
-      console.error(error);
-      throw error;
+  fs.writeFile(
+    `${fileName}.json`,
+    JSON.stringify(response, null, "\t"),
+    (error) => {
+      // in case of a writing problem
+      if (error) {
+        console.error(error);
+        throw error;
+      }
     }
-  })
-}
+  );
+};
 
 // generic function to read the response from JSON file
 function readRequestFromFile(fileName) {
@@ -81,38 +85,39 @@ const requestFromServer = async (searchResponse) => {
   try {
     const flightsResponse = await axios.request(flightRequestConfig);
     const hotelsResponse = await axios.request(hotelsRequestConfig);
-    return { flightsResponse, hotelsResponse }
-
+    return { flightsResponse, hotelsResponse };
   } catch (err) {
     console.error(err);
   }
-}
+};
 
 // make the request from JSON file and return the response
 const requestFromFile = () => {
-  const flightsResponse = readRequestFromFile('flightResponse');
-  const hotelsResponse = readRequestFromFile('hotelsResponse');
+  const flightsResponse = readRequestFromFile("flightResponse");
+  const hotelsResponse = readRequestFromFile("hotelsResponse");
 
-  return { flightsResponse, hotelsResponse }
-}
+  return { flightsResponse, hotelsResponse };
+};
 
 // make request and send to print
 const makeRequest = (searchResponse, readFromServer) => {
   let flightsArr;
   let hotelArr;
   if (readFromServer == true) {
-    requestFromServer(searchResponse).then(({ flightsResponse, hotelsResponse }) => {
-      try {
-        flightsArr = parsingFlights(flightsResponse.data);
-        hotelArr = parsingHotels(hotelsResponse.data);
-        writeResponseToJSONFile(flightsResponse.data, 'flightResponse');
-        console.log("successed to write flights response into file")
-        writeResponseToJSONFile(hotelsResponse.data, 'hotelsResponse');
-        console.log("successed to write hotels response into file")
-      } catch (err) {
-        console.log(err + " failed to write or parse");
+    requestFromServer(searchResponse).then(
+      ({ flightsResponse, hotelsResponse }) => {
+        try {
+          flightsArr = parsingFlights(flightsResponse.data);
+          hotelArr = parsingHotels(hotelsResponse.data);
+          writeResponseToJSONFile(flightsResponse.data, "flightResponse");
+          console.log("successed to write flights response into file");
+          writeResponseToJSONFile(hotelsResponse.data, "hotelsResponse");
+          console.log("successed to write hotels response into file");
+        } catch (err) {
+          console.log(err + " failed to write or parse");
+        }
       }
-    })
+    );
   } else {
     const { flightsResponse, hotelsResponse } = requestFromFile();
     try {
@@ -125,7 +130,7 @@ const makeRequest = (searchResponse, readFromServer) => {
     }
   }
 
-  return { flightsArr, hotelArr }
+  return { flightsArr, hotelArr };
 };
 
 // use Validator to validate the response
@@ -135,7 +140,7 @@ const validateResponse = (response, schemaToValid, serverType) => {
     throwFirst: true,
   });
   console.log(`${serverType} valid: ${ValidatorResult.valid}`);
-}
+};
 // parse the hotels response and print on CLI
 function parsingHotels(response) {
   validateResponse(response, skyScannerHotelSchema, "hotel");
@@ -160,7 +165,7 @@ function parsingHotels(response) {
   }
 
   return hotelArr;
-};
+}
 
 // parse the flights response and print on CLI
 const parsingFlights = (response) => {
@@ -168,12 +173,6 @@ const parsingFlights = (response) => {
   const { legs, itineraries, places } = response.content.results;
   const legsArr = Object.keys(response.content.results.legs);
   const flightsArr = [];
-  try {
-    exchangeRate = convertCurrency();
-    console.log(exchangeRate + "exchangeRate");
-  }catch(err) {
-    exchangeRate = 0.36;
-  }
 
   if (Object.keys(legs).length == 0 || Object.keys(itineraries).length == 0) {
     throw new Error(`legs/itineraries is empty, ${response.status}`);
@@ -182,12 +181,14 @@ const parsingFlights = (response) => {
   for (let i = 0; i < limit; ++i) {
     const key = legsArr[i];
     const flightOption = {
-      originName: `${places[legs[key].originPlaceId].name} - ${places[legs[key].originPlaceId].iata
-        }`,
-      destinationName: `${places[legs[key].destinationPlaceId].name} - ${places[legs[key].destinationPlaceId].iata
-        }`,
+      originName: `${places[legs[key].originPlaceId].name} - ${
+        places[legs[key].originPlaceId].iata
+      }`,
+      destinationName: `${places[legs[key].destinationPlaceId].name} - ${
+        places[legs[key].destinationPlaceId].iata
+      }`,
       date: legs[key].departureDateTime,
-      price: `${itineraries[key].pricingOptions[0].price.amount / exchangeRate} ${currencyToType}`,
+      price: `${itineraries[key].pricingOptions[0].price.amount} ${currencyToType}`,
     };
     console.log();
     console.log(`Flight Option ${i + 1}:`);
@@ -223,5 +224,3 @@ const initializeServerAndGetData = () => {
 // });
 
 initializeServerAndGetData();
-
-
