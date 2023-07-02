@@ -201,10 +201,10 @@ const parsingFlights = (response) => {
 };
 
 const makeChatGptRequest = async (message) => {
-  ChatGptConfig.data.messages[0].content = message;
+  ChatGptConfig.data.query = message;
   try {
     const response = await axios.request(ChatGptConfig);
-    console.log(response.data.choices[0].message);
+    console.log(response.data.response);
   } catch (error) {
     console.error(error);
   }
@@ -235,4 +235,7 @@ const initializeServerAndGetData = () => {
 // });
 
 // initializeServerAndGetData();
-makeChatGptRequest((message = "what is the meaning of life? "));
+makeChatGptRequest(
+  (message =
+    "considering london, paris, new york and delhi. what are the best destination to travel in february 2024 if i want a warm and sunny weather? ")
+);
