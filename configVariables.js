@@ -89,6 +89,25 @@ const optionsForAutocomplete = {
   },
 };
 
+const ChatGptConfig = {
+  method: "POST",
+  url: "https://chatgpt53.p.rapidapi.com/",
+  headers: {
+    "content-type": "application/json",
+    "X-RapidAPI-Key": "9da54de026msh5bb0867e8c5b75ep1e76aajsnb2ca5fce3c19",
+    "X-RapidAPI-Host": "chatgpt53.p.rapidapi.com",
+  },
+  data: {
+    messages: [
+      {
+        role: "user",
+        content: "Hello",
+      },
+    ],
+    temperature: 1,
+  },
+};
+
 let fromCurrencyCode = "USD";
 let toCurrencyCode = "ILS";
 let amount = 1;
@@ -118,6 +137,7 @@ console.log("****************************************************************");
 module.exports = {
   flightRequestConfig,
   hotelsRequestConfig,
+  ChatGptConfig,
   optionsForAutocomplete,
   iataCode,
   exchangeCurrencyConfig,
